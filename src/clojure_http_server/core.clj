@@ -1,6 +1,6 @@
 (ns clojure-http-server.core
  (:require [clojure.string])
- (:import (java.net ServerSocket SocketException)
+ (:import (java.net ServerSocket SocketException )
   (java.util Date)
   (java.io PrintWriter BufferedReader InputStreamReader BufferedOutputStream)))
 
@@ -35,13 +35,20 @@
  [client-socket]
  (new BufferedReader (new InputStreamReader (.getInputStream client-socket))))
 
+(defn send-file
+"Reads a file from the file system and writes it to the socket"
+[client-socket http-method]
+(println "correct"))
+
 (defn process-request
  "Parse the HTTP request and decide what to do"
  [client-socket]
  (let [reader (get-reader client-socket) first-line (.readLine reader) tokens (clojure.string/split first-line #"\s+")]
   (let [http-method (clojure.string/upper-case (get tokens 0 "unknown"))]
-   (if (= http-method "GET")
-    (println "right" http-method)
+   (if (or (= http-method "GET") (= http-method "HEAD"))
+   (let [file-requested (get tokens 1 "not-existing")]
+    (send-file client-socket http-method)
+    )
 
     (do
      (send-html-response client-socket "HTTP/1.1 501 Not Implemented" "Not Implemented" (str "<h2>501 Not Implemented: " http-method " method.</h2>"))
