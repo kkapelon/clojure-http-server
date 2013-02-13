@@ -2,7 +2,10 @@
  (:require [clojure.string])
  (:import (java.net ServerSocket SocketException )
   (java.util Date)
-  (java.io PrintWriter BufferedReader InputStreamReader BufferedOutputStream)))
+  (java.io File RandomAccessFile PrintWriter BufferedReader InputStreamReader BufferedOutputStream)))
+
+(def web-root ".")
+(def default-file "index.html")
 
 (defn send-http-response 
  "Send data to client"
@@ -35,10 +38,34 @@
  [client-socket]
  (new BufferedReader (new InputStreamReader (.getInputStream client-socket))))
 
+(defn read-file
+"Reads a binary file into a buffer"
+[file-to-read]
+(with-open [file (new RandomAccessFile file-to-read "r")]
+  (let [x (byte-array (.length file-to-read))]
+    (do
+    (.read file x)
+    x
+    
+    
+    ))))
+
 (defn send-file
-"Reads a file from the file system and writes it to the socket"
-[client-socket http-method]
-(println "correct"))
+ "Reads a file from the file system and writes it to the socket"
+ [client-socket file http-method retry]
+ (let [is-dir (.isDirectory file)]
+  (if (and is-dir (not retry))
+   (send-file client-socket (new File file default-file) http-method true))
+  (if (and (.exists file) (not is-dir))
+   ( let [content (if (= http-method "GET") (read-file file) (byte-array 0)) content-type "text-html"]
+     (do
+      (send-http-response client-socket "HTTP/1.0 200 OK" content-type content)
+      (println (str "File " (.getPath file) " of type " content-type " returned")
+      )))
+   (do
+    (send-html-response client-socket "HTTP/1.1 501 Not Found" "File Not Found" (str "<h2>404 File Not Found: " (.getPath file) "</h2>"))
+    (println (str "501 Not Implemented: " http-method " method")))
+  )))
 
 (defn process-request
  "Parse the HTTP request and decide what to do"
@@ -46,8 +73,10 @@
  (let [reader (get-reader client-socket) first-line (.readLine reader) tokens (clojure.string/split first-line #"\s+")]
   (let [http-method (clojure.string/upper-case (get tokens 0 "unknown"))]
    (if (or (= http-method "GET") (= http-method "HEAD"))
-   (let [file-requested (get tokens 1 "not-existing")]
-    (send-file client-socket http-method)
+   (let [file-requested-name (get tokens 1 "not-existing") 
+   file-requested 
+   (new File web-root file-requested-name)]
+    (send-file client-socket file-requested http-method false)
     )
 
     (do
