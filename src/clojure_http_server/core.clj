@@ -45,10 +45,17 @@
   (let [x (byte-array (.length file-to-read))]
     (do
     (.read file x)
-    x
-    
-    
-    ))))
+    x))))
+
+(defn find-content-type
+"Simple file type mappings"
+[filename]
+(cond 
+ (or (.endsWith filename ".html") (.endsWith filename ".htm")) "text/html"
+ (.endsWith filename ".gif") "image/gif"
+ (or (.endsWith filename ".jpg") (.endsWith filename ".jpeg")) "image/jpeg"
+ (or (.endsWith filename ".class") (.endsWith filename ".jar")) "applicaton/octet-stream"
+ :else "text/plain"))
 
 (defn send-file
  "Reads a file from the file system and writes it to the socket"
@@ -57,7 +64,7 @@
   (if (and is-dir (not retry))
    (send-file client-socket (new File file default-file) http-method true))
   (if (and (.exists file) (not is-dir))
-   ( let [content (if (= http-method "GET") (read-file file) (byte-array 0)) content-type "text-html"]
+   ( let [content (if (= http-method "GET") (read-file file) (byte-array 0)) content-type (find-content-type (.getName file))]
      (do
       (send-http-response client-socket "HTTP/1.0 200 OK" content-type content)
       (println (str "File " (.getPath file) " of type " content-type " returned")
