@@ -93,12 +93,18 @@
 
   )))
 
+
 (defn respond-to-client 
  "A new http client is connected. Process the request" [client-socket]
  (do (println "A client has connected" (new Date))
   (process-request client-socket)
   (.close client-socket)
   (println "Connection closed")))
+
+(defn new-worker
+"Spawn a new thread"
+[client-socket]
+(.start (new Thread (fn [] (respond-to-client client-socket)))))
 
 
 (defn -main
@@ -107,6 +113,8 @@
  (let [port 8080 server-socket (new ServerSocket port)]
   (do 
    (println (str "Listening for connections on port " port))
-   (while true (respond-to-client (.accept server-socket))))))
+   (while true
+   (let [client-socket (.accept server-socket)]
+   (new-worker client-socket))))))
 
 
