@@ -1,6 +1,6 @@
 # Simple HTTP server written in Clojure
 
-A simple file based HTTP server in Clojure created for my [Clojure blog post](http://zeroturnaround.com/rebellabs/the-adventurous-developers-guide-to-jvm-languages-clojure/)
+A simple file based HTTP server in Clojure created for my [Clojure blog post](https://blog.codepipes.com/containers/clojure-lein-docker.html)
 
 
 It exposes 8080 and serves all file requests for files in the same
