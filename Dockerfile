@@ -16,4 +16,4 @@ COPY --from=LEIN_TOOL_CHAIN /tmp/app-src/target/uberjar/clojure-http-server.jar 
 
 WORKDIR /app
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","./clojure-http-server.jar"]
+CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","./clojure-http-server.jar"]
