@@ -7,7 +7,13 @@ FROM eclipse-temurin:11-jre-alpine
 
 EXPOSE 8080
 
+RUN apk add --no-cache ca-certificates bash
+
 RUN mkdir /app
+
+COPY index.html /app
 COPY --from=LEIN_TOOL_CHAIN /tmp/app-src/target/uberjar/clojure-http-server.jar /app/clojure-http-server.jar
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/clojure-http-server.jar"]
+WORKDIR /app
+
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","./clojure-http-server.jar"]
