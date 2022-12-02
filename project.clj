@@ -1,4 +1,6 @@
-(defproject clojure-http-server "1.0.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :dependencies [[org.clojure/clojure "1.3.0"]]
-  :main clojure-http-server.core)
+(defproject clojure-http-server "1.0.0"
+  :description "Simple Http Server in Clojure"
+  :dependencies [[org.clojure/clojure "1.10.0"]]
+  :main ^:skip-aot clojure-http-server.core
+  :target-path "target/%s"
+  :profiles {:uberjar {:aot :all}})

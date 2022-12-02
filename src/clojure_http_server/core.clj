@@ -1,4 +1,5 @@
 (ns clojure-http-server.core
+ (:gen-class)
  (:require [clojure.string])
  (:import (java.net ServerSocket SocketException )
   (java.util Date)
