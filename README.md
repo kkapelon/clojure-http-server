@@ -3,8 +3,8 @@
 A simple file based HTTP server in Clojure created for my [Clojure blog post](http://zeroturnaround.com/rebellabs/the-adventurous-developers-guide-to-jvm-languages-clojure/)
 
 
-It exposes 8080 and servs all file requests for files in the same
-directory as the executable.
+It exposes 8080 and serves all file requests for files in the same
+directory as the executable. Currently only an example index.html is provided
 
 
 ## How to run locally
